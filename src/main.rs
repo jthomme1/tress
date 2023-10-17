@@ -1,5 +1,5 @@
-use crate::state::State;
-use crate::render::ChessWidget;
+use crate::render::{ChessWidget, ChessWidgetState};
+use crate::state::Dir;
 use crossterm::{
     event::{self, KeyCode, KeyEventKind},
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
@@ -19,7 +19,7 @@ fn main() -> Result<()> {
     let mut terminal = Terminal::new(CrosstermBackend::new(stderr()))?;
     terminal.clear()?;
 
-    let mut state = State::new();
+    let mut state = ChessWidgetState::new();
 
     loop {
         terminal.draw(|frame| {
@@ -31,6 +31,24 @@ fn main() -> Result<()> {
             if let event::Event::Key(key) = event::read()? {
                 if key.kind == KeyEventKind::Press && key.code == KeyCode::Char('q') {
                     break;
+                }
+                if key.kind == KeyEventKind::Press && key.code == KeyCode::Char('j') {
+                    state.move_cursor(Dir::Down);
+                }
+                if key.kind == KeyEventKind::Press && key.code == KeyCode::Char('k') {
+                    state.move_cursor(Dir::Up);
+                }
+                if key.kind == KeyEventKind::Press && key.code == KeyCode::Char('h') {
+                    state.move_cursor(Dir::Left);
+                }
+                if key.kind == KeyEventKind::Press && key.code == KeyCode::Char('l') {
+                    state.move_cursor(Dir::Right);
+                }
+                if key.kind == KeyEventKind::Press && key.code == KeyCode::Char(' ') {
+                    state.toggle_select();
+                }
+                if key.kind == KeyEventKind::Press && key.code == KeyCode::Esc {
+                    state.quit_select();
                 }
             }
         }
